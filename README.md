@@ -83,7 +83,7 @@ rendered interactively in [`site/index.html`](site/index.html).
 
 ## What the study finds
 
-**The Bayesian treatment wins, and where it wins matters.** BPMF is the strongest model
+**The Bayesian treatment has an edge over other PMF models.** BPMF is the strongest model
 tested, and its advantage over MAP estimation concentrates in the sparse-profile strata
 rather than spreading evenly across users — the behaviour the hierarchical priors are meant
 to produce.
