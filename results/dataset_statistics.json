@@ -1,0 +1,51 @@
+{
+  "experiment": "dataset_statistics",
+  "environment": {
+    "timestamp_utc": "2026-08-17T04:50:15+00:00",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.4.3",
+    "torch": "2.10.0+cpu"
+  },
+  "table": [
+    {
+      "dataset": "ml-100k",
+      "n_users": 943,
+      "n_items": 1682,
+      "n_ratings": 100000,
+      "sparsity": 0.936953,
+      "density_pct": 6.3047,
+      "rating_min": 1.0,
+      "rating_max": 5.0,
+      "rating_mean": 3.5299,
+      "rating_std": 1.1257,
+      "ratings_per_user_mean": 106.04,
+      "ratings_per_user_median": 65.0,
+      "ratings_per_user_min": 20,
+      "ratings_per_item_mean": 59.45,
+      "ratings_per_item_median": 27.0,
+      "items_with_lt_5_ratings_pct": 19.8,
+      "users_with_lt_20_ratings_pct": 0.0
+    },
+    {
+      "dataset": "ml-1m",
+      "n_users": 6040,
+      "n_items": 3706,
+      "n_ratings": 1000209,
+      "sparsity": 0.955316,
+      "density_pct": 4.4684,
+      "rating_min": 1.0,
+      "rating_max": 5.0,
+      "rating_mean": 3.5816,
+      "rating_std": 1.1171,
+      "ratings_per_user_mean": 165.6,
+      "ratings_per_user_median": 96.0,
+      "ratings_per_user_min": 20,
+      "ratings_per_item_mean": 269.89,
+      "ratings_per_item_median": 123.5,
+      "items_with_lt_5_ratings_pct": 7.83,
+      "users_with_lt_20_ratings_pct": 0.0
+    }
+  ]
+}

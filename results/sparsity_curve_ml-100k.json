@@ -1,0 +1,69 @@
+{
+  "experiment": "sparsity_curve_ml-100k",
+  "environment": {
+    "timestamp_utc": "2026-08-17T08:20:36+00:00",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.4.3",
+    "torch": "2.10.0+cpu"
+  },
+  "dataset": "ml-100k",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "table": [
+    {
+      "fraction": 0.2,
+      "n_train_ratings": 14061,
+      "density_pct": 0.8865,
+      "pmf_test_rmse": 1.09256,
+      "pmf_test_rmse_ci95": 0.01611,
+      "bias_test_rmse": 0.99037,
+      "bias_test_rmse_ci95": 0.00489,
+      "pmf_advantage": -0.10219
+    },
+    {
+      "fraction": 0.4,
+      "n_train_ratings": 27994,
+      "density_pct": 1.7649,
+      "pmf_test_rmse": 1.01255,
+      "pmf_test_rmse_ci95": 0.00632,
+      "bias_test_rmse": 0.96623,
+      "bias_test_rmse_ci95": 0.00251,
+      "pmf_advantage": -0.04632
+    },
+    {
+      "fraction": 0.6,
+      "n_train_ratings": 41958,
+      "density_pct": 2.6453,
+      "pmf_test_rmse": 0.97319,
+      "pmf_test_rmse_ci95": 0.00599,
+      "bias_test_rmse": 0.95443,
+      "bias_test_rmse_ci95": 0.00511,
+      "pmf_advantage": -0.01876
+    },
+    {
+      "fraction": 0.8,
+      "n_train_ratings": 56083,
+      "density_pct": 3.5358,
+      "pmf_test_rmse": 0.9491,
+      "pmf_test_rmse_ci95": 0.00836,
+      "bias_test_rmse": 0.94876,
+      "bias_test_rmse_ci95": 0.00604,
+      "pmf_advantage": -0.00034
+    },
+    {
+      "fraction": 1.0,
+      "n_train_ratings": 70000,
+      "density_pct": 4.4133,
+      "pmf_test_rmse": 0.93337,
+      "pmf_test_rmse_ci95": 0.00665,
+      "bias_test_rmse": 0.94489,
+      "bias_test_rmse_ci95": 0.00615,
+      "pmf_advantage": 0.01152
+    }
+  ]
+}

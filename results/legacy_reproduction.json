@@ -1,0 +1,57 @@
+{
+  "config": {
+    "source": "legacy/ProbabilisticMatrixFactorization.py",
+    "num_feat": 10,
+    "epsilon": 1,
+    "_lambda": 0.1,
+    "momentum": 0.8,
+    "maxepoch": 10,
+    "num_batches": 100,
+    "batch_size": 1000,
+    "n_seeds": 5
+  },
+  "test_rmse_mean": 0.9669,
+  "test_rmse_std": 0.0061,
+  "test_rmse_min": 0.9571,
+  "test_rmse_max": 0.9724,
+  "reported_train_rmse_mean": 0.8968,
+  "true_train_rmse_mean": 0.8963,
+  "penalty_inflation_mean": 0.0005,
+  "runs": [
+    {
+      "seed": 0,
+      "reported_train_rmse": 0.8952675350339194,
+      "true_train_rmse": 0.8947629636488752,
+      "test_rmse": 0.97004881637707,
+      "penalty_inflation": 0.0005045713850442279
+    },
+    {
+      "seed": 1,
+      "reported_train_rmse": 0.8963454861843505,
+      "true_train_rmse": 0.895845477855006,
+      "test_rmse": 0.9724060709459494,
+      "penalty_inflation": 0.0005000083293444924
+    },
+    {
+      "seed": 2,
+      "reported_train_rmse": 0.8965197639579434,
+      "true_train_rmse": 0.8960180979109772,
+      "test_rmse": 0.9653185019861176,
+      "penalty_inflation": 0.0005016660469662204
+    },
+    {
+      "seed": 3,
+      "reported_train_rmse": 0.9023756533747308,
+      "true_train_rmse": 0.9018880843773605,
+      "test_rmse": 0.9697578385809816,
+      "penalty_inflation": 0.00048756899737034676
+    },
+    {
+      "seed": 4,
+      "reported_train_rmse": 0.8933442259221464,
+      "true_train_rmse": 0.8928247257548754,
+      "test_rmse": 0.9571151199629064,
+      "penalty_inflation": 0.0005195001672709809
+    }
+  ]
+}

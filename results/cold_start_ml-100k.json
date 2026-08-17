@@ -1,0 +1,100 @@
+{
+  "experiment": "cold_start_ml-100k",
+  "environment": {
+    "timestamp_utc": "2026-08-17T08:17:10+00:00",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.4.3",
+    "torch": "2.10.0+cpu"
+  },
+  "dataset": "ml-100k",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "bins": [
+    "[0, 10)",
+    "[10, 20)",
+    "[20, 50)",
+    "[50, 100)",
+    "[100, 200)",
+    "[200, inf)"
+  ],
+  "table": [
+    {
+      "bin": "[0, 10)",
+      "n_test_ratings": 3,
+      "Item mean": 1.22835,
+      "Item mean ci95": 7.24012,
+      "Bias baseline": 1.3249,
+      "Bias baseline ci95": 6.87266,
+      "PMF": 1.13431,
+      "PMF ci95": 7.29285,
+      "BPMF": 1.24961,
+      "BPMF ci95": 6.70233
+    },
+    {
+      "bin": "[10, 20)",
+      "n_test_ratings": 892,
+      "Item mean": 1.07526,
+      "Item mean ci95": 0.07031,
+      "Bias baseline": 1.00971,
+      "Bias baseline ci95": 0.02646,
+      "PMF": 1.0016,
+      "PMF ci95": 0.02738,
+      "BPMF": 0.99273,
+      "BPMF ci95": 0.01088
+    },
+    {
+      "bin": "[20, 50)",
+      "n_test_ratings": 2905,
+      "Item mean": 1.0411,
+      "Item mean ci95": 0.03615,
+      "Bias baseline": 0.9651,
+      "Bias baseline ci95": 0.02692,
+      "PMF": 0.95228,
+      "PMF ci95": 0.02679,
+      "BPMF": 0.94921,
+      "BPMF ci95": 0.0326
+    },
+    {
+      "bin": "[50, 100)",
+      "n_test_ratings": 4132,
+      "Item mean": 1.01988,
+      "Item mean ci95": 0.02429,
+      "Bias baseline": 0.9584,
+      "Bias baseline ci95": 0.02522,
+      "PMF": 0.93904,
+      "PMF ci95": 0.02146,
+      "BPMF": 0.92411,
+      "BPMF ci95": 0.02126
+    },
+    {
+      "bin": "[100, 200)",
+      "n_test_ratings": 7482,
+      "Item mean": 0.99657,
+      "Item mean ci95": 0.00884,
+      "Bias baseline": 0.92482,
+      "Bias baseline ci95": 0.00599,
+      "PMF": 0.89991,
+      "PMF ci95": 0.0132,
+      "BPMF": 0.88451,
+      "BPMF ci95": 0.0111
+    },
+    {
+      "bin": "[200, inf)",
+      "n_test_ratings": 4584,
+      "Item mean": 1.05994,
+      "Item mean ci95": 0.01451,
+      "Bias baseline": 0.93879,
+      "Bias baseline ci95": 0.01172,
+      "PMF": 0.95549,
+      "PMF ci95": 0.01014,
+      "BPMF": 0.89541,
+      "BPMF ci95": 0.01906
+    }
+  ],
+  "note": "MovieLens guarantees >= 20 ratings per user, so the lowest bins are sparsely populated and measure low-activity rather than true cold-start users."
+}

@@ -1,0 +1,146 @@
+{
+  "experiment": "scalability",
+  "environment": {
+    "timestamp_utc": "2026-08-17T09:26:12+00:00",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.4.3",
+    "torch": "2.10.0+cpu"
+  },
+  "datasets": [
+    "ml-100k",
+    "ml-1m"
+  ],
+  "fractions": [
+    0.1,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "n_factors": 20,
+  "epochs_measured": 10,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "table": [
+    {
+      "dataset": "ml-100k",
+      "fraction": 0.1,
+      "n_train_ratings": 7983,
+      "seconds_per_epoch": 0.01515,
+      "seconds_per_epoch_ci95": 0.00159,
+      "microseconds_per_rating": 1.8982
+    },
+    {
+      "dataset": "ml-100k",
+      "fraction": 0.25,
+      "n_train_ratings": 19945,
+      "seconds_per_epoch": 0.03771,
+      "seconds_per_epoch_ci95": 0.00319,
+      "microseconds_per_rating": 1.8907
+    },
+    {
+      "dataset": "ml-100k",
+      "fraction": 0.5,
+      "n_train_ratings": 40069,
+      "seconds_per_epoch": 0.07094,
+      "seconds_per_epoch_ci95": 0.00217,
+      "microseconds_per_rating": 1.7705
+    },
+    {
+      "dataset": "ml-100k",
+      "fraction": 0.75,
+      "n_train_ratings": 59926,
+      "seconds_per_epoch": 0.11049,
+      "seconds_per_epoch_ci95": 0.00954,
+      "microseconds_per_rating": 1.8438
+    },
+    {
+      "dataset": "ml-100k",
+      "fraction": 1.0,
+      "n_train_ratings": 80000,
+      "seconds_per_epoch": 0.14418,
+      "seconds_per_epoch_ci95": 0.00627,
+      "microseconds_per_rating": 1.8023
+    },
+    {
+      "dataset": "ml-1m",
+      "fraction": 0.1,
+      "n_train_ratings": 80174,
+      "seconds_per_epoch": 0.25793,
+      "seconds_per_epoch_ci95": 0.02335,
+      "microseconds_per_rating": 3.2171
+    },
+    {
+      "dataset": "ml-1m",
+      "fraction": 0.25,
+      "n_train_ratings": 200458,
+      "seconds_per_epoch": 0.63729,
+      "seconds_per_epoch_ci95": 0.10222,
+      "microseconds_per_rating": 3.1792
+    },
+    {
+      "dataset": "ml-1m",
+      "fraction": 0.5,
+      "n_train_ratings": 400620,
+      "seconds_per_epoch": 1.25071,
+      "seconds_per_epoch_ci95": 0.20039,
+      "microseconds_per_rating": 3.1219
+    },
+    {
+      "dataset": "ml-1m",
+      "fraction": 0.75,
+      "n_train_ratings": 600181,
+      "seconds_per_epoch": 1.90246,
+      "seconds_per_epoch_ci95": 0.201,
+      "microseconds_per_rating": 3.1698
+    },
+    {
+      "dataset": "ml-1m",
+      "fraction": 1.0,
+      "n_train_ratings": 800167,
+      "seconds_per_epoch": 2.54851,
+      "seconds_per_epoch_ci95": 0.31581,
+      "microseconds_per_rating": 3.185
+    }
+  ],
+  "loglog_fit": {
+    "slope": 1.1509,
+    "slope_ci95": 0.083,
+    "slope_ci_low": 1.068,
+    "slope_ci_high": 1.2339,
+    "intercept": -14.6697,
+    "r_squared": 0.98929,
+    "p_value": 3.608654647875644e-09,
+    "linear_scaling_supported": false
+  },
+  "per_dataset_fit": {
+    "ml-100k": {
+      "slope": 0.9761,
+      "slope_ci95": 0.0248,
+      "slope_ci_low": 0.9513,
+      "slope_ci_high": 1.0009,
+      "intercept": -12.9578,
+      "r_squared": 0.9995,
+      "p_value": 4.798674189387637e-06,
+      "linear_scaling_supported": true
+    },
+    "ml-1m": {
+      "slope": 0.9939,
+      "slope_ci95": 0.0114,
+      "slope_ci_low": 0.9825,
+      "slope_ci_high": 1.0053,
+      "intercept": -12.5833,
+      "r_squared": 0.9999,
+      "p_value": 4.384331298403127e-07,
+      "linear_scaling_supported": true
+    }
+  },
+  "within_dataset_at_most_linear": true,
+  "within_dataset_sublinear": [],
+  "interpretation": "Within a dataset -- user and item counts fixed, only the number of observations varying, which is the comparison the claim is about -- cost grows at most linearly in N. Pooling across datasets raises the fitted exponent above 1, but that reflects a constant vertical offset rather than superlinear growth: the momentum update is dense over all factor rows, so each step carries a cost proportional to n_users + n_items on top of the gradient, and the larger dataset pays more of it at equal N."
+}

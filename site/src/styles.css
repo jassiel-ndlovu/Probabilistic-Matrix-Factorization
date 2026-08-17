@@ -1,0 +1,604 @@
+/* ---------------------------------------------------------------------------
+   Probabilistic Matrix Factorization — re-execution study
+   ---------------------------------------------------------------------------
+   Styled after latex-project.org, whose design system this reproduces:
+
+     page ground   #f5f1e8   warm parchment
+     navigation    #008080   teal bar, white links
+     content card  #ffffff   inset on the parchment, 960px column, 32px gutters
+     accent        #005db7   links and sub-headings
+     rules         #e3e3e5   hairline dividers between sections
+     footer        #565a50   olive-grey, white text
+     headings      #222222   light weight (300), tight tracking (-0.03em)
+
+   Two deliberate departures, both because the original cannot be reproduced
+   faithfully here:
+
+   1. Roboto is the reference site's typeface but the Artifact CSP blocks font
+      CDNs, so the stack falls back to Helvetica/Arial — the nearest grotesque
+      available without shipping a webfont.
+   2. Teal #008080 fails the chroma floor for *data* encoding (it reads grey
+      once desaturated for colour-vision deficiency), so it stays chrome-only
+      and the chart series use a separately validated set.
+
+   This is a single-theme design, committed rather than omitted: the reference
+   site has no dark mode, and every colour below is painted explicitly so the
+   page holds its own ground regardless of the viewer's theme.
+--------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --page:          #f5f1e8;
+  --surface:       #ffffff;
+  --surface-sunk:  #f7f5f0;
+  --nav:           #008080;
+  --nav-hover:     #016b6b;
+  --footer:        #565a50;
+
+  --ink:           #222222;
+  --ink-body:      #000000;
+  --ink-2:         #55584f;
+  --ink-3:         #83867c;
+
+  --accent:        #005db7;
+  --accent-dark:   #00478c;
+  --accent-wash:   #eaf2fb;
+
+  --rule:          #e3e3e5;
+  --hairline:      #e3e3e5;
+  --hairline-firm: #cfcfd2;
+
+  /* Chart series. Validated on a white surface for adjacent-pair CVD
+     separation (worst 9.1) and normal-vision separation (worst 22.9). Slots 3
+     and 4 sit below 3:1 against white, so charts using them carry direct
+     labels and a table view. */
+  --series-1: #005db7;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #d03b3b;
+  --series-6: #4a3aa7;
+
+  --supported: #0a7a0a;
+  --partial:   #b07500;
+  --refuted:   #c02b2b;
+
+  --grid: #ececee;
+  --axis: #c8c8cb;
+
+  --sans: Roboto, "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --mono: "Roboto Mono", ui-monospace, Consolas, "Courier New", monospace;
+
+  --column: 960px;
+  --gutter: 32px;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--page); }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink-body);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------------- typography */
+
+h1, h2, h3, h4 {
+  font-family: var(--sans);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* The reference site sets h1 and h2 both at 24px — a very flat scale that works
+   for short pages. This is one long document, so it needs a little more
+   separation, but stays close to that idiom rather than inflating the title. */
+h1 { font-size: clamp(24px, 4.4vw, 30px); line-height: 1.14; }
+h2 { font-size: clamp(20px, 3vw, 23px); line-height: 1.12; }
+h3 { font-size: 18px; line-height: 1.2; color: var(--accent); }
+h4 { font-size: 16px; line-height: 1.2; }
+
+p { margin: 0 0 1.2em; }
+p:last-child { margin-bottom: 0; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 400;
+}
+a:hover { color: var(--accent-dark); text-decoration: underline; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+code, .num, kbd {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+code {
+  font-size: 0.875em;
+  background: var(--surface-sunk);
+  border: 1px solid var(--rule);
+  padding: 0.05em 0.35em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 40px 0;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.muted { color: var(--ink-2); }
+.hidden { display: none !important; }
+
+ul { padding-left: 1.3em; }
+li { margin-bottom: 0.4em; }
+
+/* --------------------------------------------------------------------- nav */
+
+.masthead { background: var(--page); }
+
+.masthead-inner {
+  max-width: var(--column);
+  margin-inline: auto;
+  padding: 18px var(--gutter) 12px;
+}
+
+.masthead-brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 28px;
+}
+
+.masthead-title {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.masthead-sub { font-size: 14px; color: var(--ink-2); }
+
+/* The likelihood serves as the wordmark. It is set small and in the muted ink
+   so it reads as a device rather than as an equation demanding to be solved,
+   and it is hidden below the width at which it would wrap into nonsense. */
+.masthead-mark {
+  color: var(--ink-2);
+  font-size: 12px;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.masthead-mark mjx-container[display="true"] { margin: 0 !important; }
+.masthead-mark mjx-container { font-size: 86% !important; }
+
+/* On narrow viewports the mark drops onto its own line beneath the title and
+   shrinks, rather than disappearing — it is the page's identity. Only below the
+   width at which it would be illegible is it dropped entirely. */
+@media (max-width: 780px) {
+  .masthead-brand { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .masthead-mark mjx-container { font-size: 72% !important; }
+}
+
+@media (max-width: 430px) {
+  .masthead-mark { display: none; }
+}
+
+/* Until MathJax has typeset, raw \( … \) source would flash. Keep math hidden
+   for the first moment, then reveal. If MathJax never loads — the CDN is
+   blocked, the viewer is offline — a timeout reveals the TeX source rather than
+   leaving blank space where an equation should be. */
+mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.note mjx-container[display="true"] { margin: 0.25em 0 !important; }
+
+/* Fallback when the MathJax CDN is unreachable. The TeX source is then all the
+   reader has, so present it deliberately — monospaced, tinted, on the sunk
+   surface — instead of leaving backslashes loose in the prose. */
+:root.mathjax-unavailable .masthead-mark,
+:root.mathjax-unavailable .note {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  word-break: break-word;
+}
+
+:root.mathjax-unavailable .note {
+  background: var(--surface-sunk);
+  border-left-color: var(--hairline-firm);
+}
+
+:root.mathjax-unavailable .masthead-mark { font-size: 10.5px; }
+
+.navbar { background: var(--nav); }
+
+.navbar ul {
+  max-width: var(--column);
+  margin-inline: auto;
+  padding: 0 var(--gutter);
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.navbar a {
+  display: block;
+  padding: 7px 13px;
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.navbar a:hover { background: var(--nav-hover); color: #ffffff; text-decoration: none; }
+
+/* Pushes everything after it to the right edge of the bar. */
+.nav-spacer { margin-left: auto; }
+
+.nav-social { display: flex; align-items: center; gap: 7px; }
+.nav-social .fa { font-size: 15px; line-height: 1; }
+
+/* Once the bar wraps onto several rows the automatic margin has nothing to push
+   against, so the social links simply continue the flow. */
+@media (max-width: 700px) {
+  .nav-spacer { display: none; }
+}
+
+/* ------------------------------------------------------------------ layout */
+
+.shell {
+  max-width: var(--column);
+  margin-inline: auto;
+  padding: 0 var(--gutter);
+}
+
+.wrap {
+  background: var(--surface);
+  padding: 40px var(--gutter);
+}
+
+.reading { max-width: 68ch; }
+
+section { scroll-margin-top: 12px; }
+
+.section-head { margin-bottom: 20px; }
+.section-head h2 { margin-bottom: 8px; }
+.section-head p { max-width: 68ch; }
+
+.stack   { display: flex; flex-direction: column; gap: 16px; }
+.stack-l { display: flex; flex-direction: column; gap: 28px; }
+
+/* --------------------------------------------------------------- lede/intro */
+
+.lede {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink-body);
+  max-width: 62ch;
+}
+
+@media (max-width: 560px) {
+  .wrap { padding: 26px 20px; }
+  .masthead-inner, .navbar ul, .footer-inner { padding-inline: 20px; }
+  .metric-value { font-size: 22px; }
+}
+
+.figure {
+  border: 1px solid var(--rule);
+  padding: 12px;
+  background: var(--surface);
+}
+
+.figure canvas { width: 100%; height: auto; display: block; }
+
+.figcaption {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  margin-top: 10px;
+}
+
+/* ------------------------------------------------------------ key numbers */
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  border: 1px solid var(--rule);
+  border-right: 0;
+}
+
+.metric {
+  padding: 14px 16px;
+  border-right: 1px solid var(--rule);
+}
+
+.metric-value {
+  display: block;
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  margin: 4px 0 2px;
+  color: var(--ink);
+}
+
+.metric-note { font-size: 13px; color: var(--ink-2); line-height: 1.35; }
+.metric.is-good .metric-value { color: var(--supported); }
+.metric.is-bad  .metric-value { color: var(--refuted); }
+
+/* ------------------------------------------------------------------ panels */
+
+.panel {
+  border: 1px solid var(--rule);
+  padding: 18px;
+  background: var(--surface);
+}
+
+.panel + .panel { margin-top: 20px; }
+
+.panel-head { margin-bottom: 12px; }
+.panel-head h3 { margin: 0; }
+
+.panel-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+
+@media (min-width: 800px) {
+  .panel-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.chart { width: 100%; display: block; overflow: visible; }
+.chart-scroll { overflow-x: auto; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-top: 10px;
+}
+
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+.swatch {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  border: 1px solid rgb(0 0 0 / 12%);
+}
+
+/* ------------------------------------------------------------------- table */
+
+.table-scroll { overflow-x: auto; margin-top: 16px; }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+th, td {
+  text-align: right;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+
+thead th {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-bottom: 1px solid var(--hairline-firm);
+}
+
+tbody tr:hover { background: var(--surface-sunk); }
+tbody tr.is-best td { color: var(--accent); font-weight: 400; }
+tbody tr.is-baseline td { color: var(--ink-2); }
+
+/* ---------------------------------------------------------------- verdicts */
+
+.verdict-list { display: flex; flex-direction: column; gap: 14px; }
+
+.verdict {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--ink-3);
+  padding: 14px 16px;
+}
+
+.verdict[data-verdict="SUPPORTED"]           { border-left-color: var(--supported); }
+.verdict[data-verdict="PARTIALLY SUPPORTED"] { border-left-color: var(--partial); }
+.verdict[data-verdict="REFUTED"]             { border-left-color: var(--refuted); }
+.verdict[data-verdict="NOT REPRODUCIBLE"]    { border-left-color: var(--refuted); }
+
+.verdict-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.verdict[data-verdict="SUPPORTED"]           .verdict-tag { color: var(--supported); }
+.verdict[data-verdict="PARTIALLY SUPPORTED"] .verdict-tag { color: var(--partial); }
+.verdict[data-verdict="REFUTED"]             .verdict-tag { color: var(--refuted); }
+.verdict[data-verdict="NOT REPRODUCIBLE"]    .verdict-tag { color: var(--refuted); }
+
+.verdict-claim { font-size: 16px; font-weight: 400; color: var(--ink); margin-bottom: 6px; }
+.verdict-finding { font-size: 15px; color: var(--ink-2); margin: 0; }
+
+/* -------------------------------------------------------------- live demo */
+
+.demo-grid { display: grid; gap: 22px; grid-template-columns: 1fr; }
+
+@media (min-width: 860px) {
+  .demo-grid { grid-template-columns: minmax(0, 320px) minmax(0, 1fr); align-items: start; }
+}
+
+.controls { display: flex; flex-direction: column; gap: 16px; }
+.control { display: flex; flex-direction: column; gap: 4px; }
+
+.control-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.control-head .num { color: var(--ink); }
+
+input[type="range"] { width: 100%; accent-color: var(--nav); cursor: pointer; }
+
+.button-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+button {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 400;
+  padding: 7px 16px;
+  border: 1px solid var(--hairline-firm);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+button:hover { background: var(--surface-sunk); }
+
+button.primary {
+  background: var(--nav);
+  border-color: var(--nav);
+  color: #ffffff;
+}
+
+button.primary:hover { background: var(--nav-hover); color: #ffffff; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.readout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(94px, 1fr));
+  border: 1px solid var(--rule);
+  border-right: 0;
+}
+
+.readout div { padding: 9px 11px; border-right: 1px solid var(--rule); }
+.readout .num { display: block; font-size: 18px; margin-top: 2px; color: var(--ink); }
+.readout .label { font-size: 10px; }
+
+.demo-canvas-wrap { display: flex; flex-direction: column; gap: 8px; }
+.demo-canvas-wrap canvas { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
+
+/* ----------------------------------------------------------------- footer */
+
+.footer { background: var(--footer); color: #ffffff; margin-top: 0; }
+
+.footer-inner {
+  max-width: var(--column);
+  margin-inline: auto;
+  padding: 26px var(--gutter) 30px;
+  font-size: 14px;
+}
+
+.footer a { color: #ffffff; text-decoration: underline; }
+.footer a:hover { color: #ffffff; }
+
+.footer-grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.footer h4 {
+  color: #ffffff;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 400;
+}
+
+.footer ul { list-style: none; padding: 0; margin: 0; }
+.footer li { margin-bottom: 5px; line-height: 1.4; }
+
+.footer-social { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.footer-social li { margin: 0; }
+
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  border-bottom: 1px solid rgb(255 255 255 / 35%);
+  padding-bottom: 1px;
+}
+
+.footer-social a:hover { border-bottom-color: #ffffff; }
+.footer-social .fa { font-size: 15px; line-height: 1; }
+.footer code { background: rgb(255 255 255 / 12%); border-color: rgb(255 255 255 / 22%); color: #ffffff; }
+
+.colophon {
+  border-top: 1px solid rgb(255 255 255 / 18%);
+  margin-top: 22px;
+  padding-top: 14px;
+  font-size: 13px;
+  color: rgb(255 255 255 / 78%);
+}
+
+/* ---------------------------------------------------------------- tooltip */
+
+.tooltip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 20;
+  background: var(--ink);
+  color: #ffffff;
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 1.45;
+  padding: 6px 8px;
+  max-width: 260px;
+  opacity: 0;
+  transition: opacity 90ms ease;
+  font-variant-numeric: tabular-nums;
+  white-space: pre-line;
+}
+
+.tooltip.show { opacity: 1; }
+
+.note {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-wash);
+  padding: 12px 16px;
+  color: var(--ink-body);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

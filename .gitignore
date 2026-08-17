@@ -88,3 +88,25 @@ ENV/
 # Rope project settings
 .ropeproject
 .idea/
+
+# --- project-specific ---
+.venv/
+
+# Large datasets are fetched by scripts/download_data.py. ml-100k stays tracked
+# because it was inherited with the fork and keeps the tests runnable offline.
+data/ml-1m/
+data/ml-10M100K/
+data/ml-100k/
+
+# LaTeX intermediates only. main.pdf, report/figures/ and site/index.html are
+# deliverables and ARE tracked -- the README links to them, so they have to
+# exist on the remote.
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.log
+report/*.out
+report/*.toc
+report/*.fdb_latexmk
+report/*.fls
+report/*.synctex.gz

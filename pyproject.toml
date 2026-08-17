@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pmf-recsys"
+version = "1.0.0"
+description = "A reproducible re-execution study of Probabilistic Matrix Factorization on MovieLens"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Nkosenhle Ndlovu" }]
+keywords = ["recommender-systems", "matrix-factorization", "collaborative-filtering", "bayesian"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+torch = ["torch>=2.0"]
+notebook = ["jupyter", "nbformat", "nbconvert", "ipykernel"]
+dev = ["pytest>=7.4", "pytest-cov"]
+all = ["torch>=2.0", "jupyter", "nbformat", "nbconvert", "ipykernel", "pytest>=7.4", "pytest-cov"]
+
+[project.scripts]
+pmf-download = "pmf.cli:download_main"
+pmf-run = "pmf.cli:run_main"
+
+[project.urls]
+Repository = "https://github.com/jassiel-ndlovu/Probabilistic-Matrix-Factorization"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
+
+[tool.ruff]
+# 110 rather than the more usual 88/100: this codebase carries long descriptive
+# identifiers (`test_rmse_no_early_stop`) alongside numeric expressions, and
+# wrapping those at 88 hurts readability more than the extra width does.
+line-length = 110
+src = ["src", "tests", "scripts"]
+exclude = ["legacy", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]

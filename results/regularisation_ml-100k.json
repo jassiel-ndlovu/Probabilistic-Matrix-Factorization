@@ -1,0 +1,79 @@
+{
+  "experiment": "regularisation_ml-100k",
+  "environment": {
+    "timestamp_utc": "2026-08-17T08:02:30+00:00",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.4.3",
+    "torch": "2.10.0+cpu"
+  },
+  "dataset": "ml-100k",
+  "n_factors": 30,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "table": [
+    {
+      "reg": 0.0,
+      "train_rmse": 0.36985,
+      "test_rmse": 1.16534,
+      "test_rmse_ci95": 0.01048,
+      "generalisation_gap": 0.79549
+    },
+    {
+      "reg": 0.005,
+      "train_rmse": 0.37881,
+      "test_rmse": 1.13289,
+      "test_rmse_ci95": 0.01087,
+      "generalisation_gap": 0.75409
+    },
+    {
+      "reg": 0.01,
+      "train_rmse": 0.38955,
+      "test_rmse": 1.10596,
+      "test_rmse_ci95": 0.01066,
+      "generalisation_gap": 0.71641
+    },
+    {
+      "reg": 0.02,
+      "train_rmse": 0.41434,
+      "test_rmse": 1.06305,
+      "test_rmse_ci95": 0.00944,
+      "generalisation_gap": 0.64871
+    },
+    {
+      "reg": 0.05,
+      "train_rmse": 0.50206,
+      "test_rmse": 0.98586,
+      "test_rmse_ci95": 0.0026,
+      "generalisation_gap": 0.4838
+    },
+    {
+      "reg": 0.1,
+      "train_rmse": 0.66746,
+      "test_rmse": 0.94139,
+      "test_rmse_ci95": 0.00075,
+      "generalisation_gap": 0.27392
+    },
+    {
+      "reg": 0.2,
+      "train_rmse": 0.89834,
+      "test_rmse": 0.96247,
+      "test_rmse_ci95": 0.00231,
+      "generalisation_gap": 0.06413
+    },
+    {
+      "reg": 0.5,
+      "train_rmse": 1.09257,
+      "test_rmse": 1.10011,
+      "test_rmse_ci95": 0.00511,
+      "generalisation_gap": 0.00754
+    }
+  ],
+  "best_reg": 0.1,
+  "best_test_rmse": 0.94139,
+  "cost_of_no_regularisation": 0.22395
+}

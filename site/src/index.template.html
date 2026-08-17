@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probabilistic Matrix Factorization on MovieLens</title>
+<meta name="description" content="A comparative study of probabilistic matrix factorization models on MovieLens 100K and 1M: MAP PMF, biased and logistic variants, and Bayesian PMF, against non-factorization baselines.">
+<style>/*__STYLES__*/</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script>
+  // MathJax 4, configured before the library loads. Only \( \) and \[ \] are
+  // treated as delimiters: a bare $ is far too common in prose and in the shell
+  // commands quoted further down the page.
+  window.MathJax = {
+    tex: {
+      inlineMath: [["\\(", "\\)"]],
+      displayMath: [["\\[", "\\]"]],
+      packages: { "[+]": ["ams"] },
+    },
+    options: {
+      skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+      renderActions: { addMenu: [] },
+    },
+    startup: {
+      ready() {
+        MathJax.startup.defaultReady();
+        document.documentElement.classList.add("mathjax-ready");
+      },
+    },
+  };
+
+  // MathJax is loaded from a CDN, which some hosts refuse: a strict
+  // content-security policy, an offline reader, or a blocked network all end
+  // the same way. Rather than leave raw \( … \) sitting in the prose looking
+  // like a rendering bug, mark the document so the TeX is presented as source.
+  window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+      if (!document.documentElement.classList.contains("mathjax-ready")) {
+        document.documentElement.classList.add("mathjax-unavailable");
+      }
+    }, 2500);
+  });
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-brand">
+      <div class="masthead-text">
+        <div class="masthead-title">Probabilistic Matrix Factorization</div>
+        <div class="masthead-sub">A comparative study on MovieLens 100K and 1M</div>
+      </div>
+      <div class="masthead-mark" aria-label="The PMF likelihood: the product over observed ratings of a Gaussian centred on the inner product of the user and item factors.">
+        \[\prod_{i=1}^{n}\prod_{j=1}^{m}\Big[\mathcal{N}\big(R_{ij} \mid \mathbf{u}_i^{\top}\mathbf{v}_j,\, \sigma^2\big)\Big]^{I_{ij}}\]
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="navbar" aria-label="Sections">
+  <ul>
+    <li><a href="#summary">Summary</a></li>
+    <li><a href="#model">Model</a></li>
+    <li><a href="#setup">Setup</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#capacity">Capacity</a></li>
+    <li><a href="#activity">User activity</a></li>
+    <li><a href="#scaling">Cost</a></li>
+    <li><a href="#demo">Run it</a></li>
+
+    <!-- Icon and label together: Font Awesome is a CDN stylesheet, and where it
+         is blocked an icon-only link would render as an empty box with nothing
+         to click. The label keeps the link usable and readable regardless. -->
+    <li class="nav-spacer"></li>
+    <li><a class="nav-social" href="https://github.com/jassiel-ndlovu/Probabilistic-Matrix-Factorization"
+           target="_blank" rel="noopener noreferrer">
+      <i class="fa fa-github" aria-hidden="true"></i><span>GitHub</span>
+    </a></li>
+    <li><a class="nav-social" href="https://www.linkedin.com/in/nkosenhle-ndlovu-8a0745290/"
+           target="_blank" rel="noopener noreferrer">
+      <i class="fa fa-linkedin" aria-hidden="true"></i><span>LinkedIn</span>
+    </a></li>
+  </ul>
+</nav>
+
+<div class="shell">
+<main class="wrap">
+
+<!-- ========================================================== summary -->
+<section id="summary">
+  <h1>Probabilistic matrix factorization on MovieLens</h1>
+
+  <p class="lede" style="margin-top:16px">
+    Five factorization models and four non-factorization baselines, evaluated on MovieLens
+    100K and 1M over repeated random splits with confidence intervals. The study measures
+    what each modelling choice is worth — latent dimensionality, regularization strength,
+    link function, optimizer, and a full Bayesian treatment — and where the remaining error
+    lives.
+  </p>
+
+  <div class="metrics" style="margin-top:26px">
+    <div class="metric is-good">
+      <span class="label">Best model</span>
+      <span class="metric-value num" data-fill="DATA.headline.best_rmse" data-digits="4">&mdash;</span>
+      <span class="metric-note" data-fill="DATA.headline.best_label">test RMSE, MovieLens 100K</span>
+    </div>
+    <div class="metric">
+      <span class="label">Strongest baseline</span>
+      <span class="metric-value num" data-fill="R.claim_verification_ml-100k.claims.0.reference_baselines.bias_baseline" data-digits="4">&mdash;</span>
+      <span class="metric-note">additive user and item offsets, no latent factors</span>
+    </div>
+    <div class="metric">
+      <span class="label">Cost scaling</span>
+      <span class="metric-value num" data-fill="DATA.headline.scaling_exponent">&mdash;</span>
+      <span class="metric-note">log–log exponent in \(N\) at fixed model size</span>
+    </div>
+  </div>
+
+  <figure class="figure" style="margin:26px 0 0">
+    <canvas id="hero-matrix" aria-label="The sparse MovieLens rating matrix, with a low-rank reconstruction sweeping across it"></canvas>
+    <figcaption class="figcaption">
+      The problem, to scale. A random \(60 \times 110\) window of MovieLens 100K, in which
+      <span class="num" data-fill="DATA.matrix.missingPct">93.7</span>% of cells are
+      unobserved. Saturated cells are ratings that exist; the sweep is the low-rank
+      structure a factorization proposes for the rest.
+    </figcaption>
+  </figure>
+</section>
+
+<hr>
+
+<!-- ============================================================ model -->
+<section id="model">
+  <div class="section-head">
+    <h2>Model</h2>
+  </div>
+
+  <div class="reading stack">
+    <p>
+      Each user \(i\) carries a latent vector \(\mathbf{u}_i \in \mathbb{R}^d\) and each item
+      \(j\) a vector \(\mathbf{v}_j \in \mathbb{R}^d\). An observed rating is modelled as a
+      noisy inner product of the two, giving the likelihood in the masthead, and zero-mean
+      spherical Gaussian priors are placed on both factor sets:
+    </p>
+
+    <p>
+      \[p(U \mid \sigma_U^2)=\prod_{i=1}^{n}\mathcal{N}\big(\mathbf{u}_i \mid \mathbf{0},\,\sigma_U^2\mathbf{I}\big),
+        \qquad
+        p(V \mid \sigma_V^2)=\prod_{j=1}^{m}\mathcal{N}\big(\mathbf{v}_j \mid \mathbf{0},\,\sigma_V^2\mathbf{I}\big).\]
+    </p>
+
+    <p>
+      Maximising the log posterior in \(U\) and \(V\) with the hyperparameters held fixed is
+      equivalent to minimising a regularized squared error over the observed entries alone:
+    </p>
+
+    <p class="note">
+      \[E=\tfrac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{m} I_{ij}\big(R_{ij}-\mathbf{u}_i^{\top}\mathbf{v}_j\big)^2
+        +\tfrac{\lambda_U}{2}\lVert U\rVert_{\mathrm{F}}^2
+        +\tfrac{\lambda_V}{2}\lVert V\rVert_{\mathrm{F}}^2,
+        \qquad \lambda_U=\frac{\sigma^2}{\sigma_U^2},\quad \lambda_V=\frac{\sigma^2}{\sigma_V^2}.\]
+    </p>
+
+    <p>
+      Two consequences follow. The regularization strength is a ratio of variances rather
+      than a free parameter, which is what distinguishes this from ridge-penalized
+      factorization. And because the sums run over observed pairs only, a gradient step
+      costs \(O(|\mathcal{O}|\,d)\) rather than \(O(nm\,d)\) — the basis of the method's
+      claim to scale with the data rather than with the matrix.
+    </p>
+
+    <p>
+      The Bayesian extension replaces the fixed prior variances with Gaussian–Wishart
+      hyperpriors, \(\mathbf{u}_i \sim \mathcal{N}(\mu_U, \Lambda_U^{-1})\) and
+      \(\mathbf{v}_j \sim \mathcal{N}(\mu_V, \Lambda_V^{-1})\), and integrates over both
+      factors and hyperparameters by Gibbs sampling. Every conditional is conjugate, so a
+      sweep is exact sampling and the regularization strength is inferred rather than tuned.
+    </p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============================================================ setup -->
+<section id="setup">
+  <div class="section-head">
+    <h2>Experimental setup</h2>
+    <p class="muted">
+      Ratings are split \(70/10/20\) into training, validation and test partitions. Model
+      selection and early stopping use validation only; the test partition is scored once
+      per fitted model. The headline comparison is repeated over five random splits, the
+      ablations over three, and every figure carries a Student-\(t\) 95% interval.
+    </p>
+  </div>
+
+  <div class="reading stack">
+    <p>
+      Baselines are included because a root-mean-squared error carries no meaning in
+      isolation. The relevant question is how much a factorization buys over predicting a
+      global mean, a per-user mean, a per-item mean, or a damped additive combination of
+      user and item offsets — the last of which is a strong model with no interaction term
+      at all.
+    </p>
+    <p>
+      Analytic gradients are verified against central finite differences of the objective
+      for every variant: both link functions, both regularization conventions, and with and
+      without bias terms.
+    </p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ========================================================== results -->
+<section id="results" data-optional>
+  <div class="section-head">
+    <h2>Model comparison</h2>
+    <p class="muted">
+      MovieLens 100K, five random splits, 95% intervals. Grey bars carry no latent factors.
+      Every factorization variant clears the strongest baseline, but by a smaller margin
+      than separates that baseline from a per-item average: most of the achievable accuracy
+      on this dataset is additive structure, and the latent factors supply the remainder.
+    </p>
+  </div>
+
+  <div class="panel">
+    <div id="chart-comparison" class="chart-scroll"></div>
+    <div class="table-scroll" id="table-comparison"></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ========================================================= capacity -->
+<section id="capacity" data-optional>
+  <div class="section-head">
+    <h2>Capacity and regularization</h2>
+    <p class="muted">
+      The two hyperparameters that dominate. They interact: raising \(d\) without raising
+      \(\lambda\) buys additional memorisation rather than additional accuracy.
+    </p>
+  </div>
+
+  <div class="panel-grid two">
+    <div class="panel">
+      <div class="panel-head"><h3>Validation error turns while training error falls</h3></div>
+      <div id="chart-convergence"></div>
+      <div id="legend-convergence"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>\(\lambda\) sets where that turn occurs</h3></div>
+      <div id="chart-regularisation"></div>
+      <div id="legend-regularisation"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:20px">
+    <div class="panel-head"><h3>Latent dimensionality, with and without early stopping</h3></div>
+    <div id="chart-dimension"></div>
+    <div id="legend-dimension"></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ========================================================= activity -->
+<section id="activity" data-optional>
+  <div class="section-head">
+    <h2>Where the error lives</h2>
+    <p class="muted">
+      The aggregate figure hides the users a model serves worst. Stratifying test error by
+      how many training ratings each user has shows the sparse-profile regime in which the
+      Bayesian treatment earns its cost.
+    </p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-grid two">
+      <div>
+        <h4 style="margin-bottom:8px">All strata</h4>
+        <div id="chart-coldstart"></div>
+      </div>
+      <div>
+        <h4 style="margin-bottom:8px">Adequately populated strata</h4>
+        <div id="chart-coldstart-zoom"></div>
+      </div>
+    </div>
+    <div id="legend-coldstart"></div>
+    <p class="figcaption" id="coldstart-note"></p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ========================================================== scaling -->
+<section id="scaling" data-optional>
+  <div class="section-head">
+    <h2>Training cost</h2>
+    <p class="muted">
+      Fitting \(\log t = a + b \log N\) over subsamples of both datasets makes the method's
+      efficiency claim measurable: \(b = 1\) is exactly linear. Read the two within-dataset
+      fits. Subsampling varies \(N\) while holding the user and item counts fixed, which is
+      the comparison the claim concerns; pooling also varies those counts, and since the
+      momentum update touches every factor row on every step, the larger dataset pays a
+      constant surcharge at equal \(N\) that lifts the pooled exponent without any curvature
+      being present.
+    </p>
+  </div>
+
+  <div class="panel">
+    <div id="chart-scalability"></div>
+    <div id="legend-scalability"></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============================================================= demo -->
+<section id="demo">
+  <div class="section-head">
+    <h2>Train one here</h2>
+    <p class="muted">
+      The gradient step above, in JavaScript, on a
+      <span class="num" data-fill="DATA.demo.nUsers">240</span>×<span class="num" data-fill="DATA.demo.nItems">320</span>
+      slice of MovieLens drawn from the most active users and most-rated films
+      (<span class="num" data-fill="DATA.demo.densityPct">—</span>% dense, far denser than
+      the full matrix, so these values are not comparable to the table above). Setting
+      \(\lambda = 0\) opens the generalization gap within a few epochs.
+    </p>
+  </div>
+
+  <div class="panel demo-grid">
+    <div class="controls">
+      <div class="control">
+        <div class="control-head"><label for="ctl-factors">Latent dimensions \(d\)</label><span class="num" id="out-factors">8</span></div>
+        <input type="range" id="ctl-factors" min="1" max="24" step="1" value="8">
+      </div>
+      <div class="control">
+        <div class="control-head"><label for="ctl-lr">Learning rate</label><span class="num" id="out-lr">0.0200</span></div>
+        <input type="range" id="ctl-lr" min="5" max="400" step="5" value="200">
+      </div>
+      <div class="control">
+        <div class="control-head"><label for="ctl-reg">Regularization \(\lambda\)</label><span class="num" id="out-reg">0.100</span></div>
+        <input type="range" id="ctl-reg" min="0" max="300" step="5" value="100">
+      </div>
+
+      <div class="button-row">
+        <button type="button" class="primary" id="btn-run">Train</button>
+        <button type="button" id="btn-reset">Reset</button>
+      </div>
+
+      <div class="readout">
+        <div><span class="label">Epoch</span><span class="num" id="out-epoch">0</span></div>
+        <div><span class="label">Train RMSE</span><span class="num" id="out-train">—</span></div>
+        <div><span class="label">Test RMSE</span><span class="num" id="out-test">—</span></div>
+      </div>
+
+      <div id="demo-curve"></div>
+    </div>
+
+    <div class="demo-canvas-wrap">
+      <canvas id="demo-matrix" aria-label="Live reconstruction of the rating matrix as the model trains"></canvas>
+      <p class="figcaption">
+        Every cell is the current prediction \(\hat r_{ij}\), including for pairs never
+        observed. Cool cells are low predicted ratings, warm cells high. Vertical banding is
+        the model learning which films are broadly liked; horizontal banding is it learning
+        which users rate generously.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ========================================================== findings -->
+<section id="findings">
+  <div class="section-head">
+    <h2>Findings</h2>
+  </div>
+
+  <div class="reading stack">
+    <ul>
+      <li>
+        The Bayesian treatment is the strongest model tested, and its advantage over
+        MAP estimation is concentrated in the sparse-profile strata rather than spread
+        evenly across users.
+      </li>
+      <li>
+        Additive user and item offsets recover most of the achievable accuracy. The
+        interaction term contributes a real but smaller increment, which is the quantity a
+        factorization has to be judged on.
+      </li>
+      <li>
+        Regularization strength is the largest single hyperparameter effect. Latent
+        dimensionality matters considerably less once early stopping is in place, which is
+        itself acting as capacity control.
+      </li>
+      <li>
+        The logistic link bounds predictions to the rating range by construction, but the
+        accuracy it adds over simply clipping an unbounded model is small. Its useful
+        \(\lambda\) is an order of magnitude below the identity model's, because the
+        gradient carries a factor \(g(x)\big(1-g(x)\big) \leq \tfrac{1}{4}\) on the data
+        term and not on the prior.
+      </li>
+      <li>
+        Training cost is linear in the number of observations at fixed model size, as
+        claimed. The dense momentum update adds a term proportional to
+        \(n_{\text{users}} + n_{\text{items}}\) that the gradient itself does not carry.
+      </li>
+    </ul>
+
+    <p class="muted" style="font-size:15px">
+      This study began as a re-execution of an earlier report by the same author, which
+      quoted a single test RMSE of 1.0109 with no baseline, interval or seed. That figure is
+      reachable only by under-training and sits behind the additive baseline reported here;
+      the present numbers supersede it. Details are in the paper's appendix.
+    </p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <h4>Reproduce</h4>
+        <ul>
+          <li><code>python scripts/download_data.py</code></li>
+          <li><code>python scripts/run_experiments.py</code></li>
+          <li><code>python scripts/make_figures.py</code></li>
+          <li><code>pytest</code></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Repository</h4>
+        <ul>
+          <li><code>src/pmf/</code> — implementation</li>
+          <li><code>report/</code> — the paper</li>
+          <li><code>notebooks/</code> — walkthrough</li>
+          <li><code>results/</code> — stored experiment output</li>
+        </ul>
+      </div>
+      <div>
+        <h4>References</h4>
+        <ul>
+          <li>Mnih &amp; Salakhutdinov, <em>Probabilistic Matrix Factorization</em>, NIPS 2007</li>
+          <li>Salakhutdinov &amp; Mnih, <em>Bayesian PMF using MCMC</em>, ICML 2008</li>
+          <li>Harper &amp; Konstan, <em>The MovieLens Datasets</em>, ACM TiiS 2015</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Author</h4>
+        <p style="margin:0 0 10px">Nkosenhle Ndlovu<br>
+          <span style="opacity:0.75">School of Computer Science and Applied Mathematics,<br>
+          University of the Witwatersrand</span>
+        </p>
+        <ul class="footer-social">
+          <li><a href="https://github.com/jassiel-ndlovu/Probabilistic-Matrix-Factorization"
+                 target="_blank" rel="noopener noreferrer">
+            <i class="fa fa-github" aria-hidden="true"></i><span>GitHub</span></a></li>
+          <li><a href="https://www.linkedin.com/in/nkosenhle-ndlovu-8a0745290/"
+                 target="_blank" rel="noopener noreferrer">
+            <i class="fa fa-linkedin" aria-hidden="true"></i><span>LinkedIn</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon">
+      Every figure is drawn from the study's stored results, so the page cannot disagree with
+      the paper's tables. Typeset with
+      <a href="https://www.mathjax.org/">MathJax</a>; design after
+      <a href="https://www.latex-project.org/">latex-project.org</a>.
+    </div>
+  </div>
+</footer>
+
+<script>/*__DATA__*/</script>
+<script>/*__APP__*/</script>
+</body>
+</html>

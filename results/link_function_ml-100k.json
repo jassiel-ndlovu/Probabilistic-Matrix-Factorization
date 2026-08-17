@@ -1,0 +1,55 @@
+{
+  "experiment": "link_function_ml-100k",
+  "environment": {
+    "timestamp_utc": "2026-08-17T08:07:32+00:00",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.4.3",
+    "torch": "2.10.0+cpu"
+  },
+  "dataset": "ml-100k",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "table": [
+    {
+      "variant": "identity, clipped",
+      "test_rmse": 0.93337,
+      "test_rmse_ci95": 0.00665,
+      "test_mae": 0.73976,
+      "out_of_range_fraction": 0.0,
+      "min_prediction": 1.0,
+      "max_prediction": 5.0
+    },
+    {
+      "variant": "identity, unclipped",
+      "test_rmse": 0.9334,
+      "test_rmse_ci95": 0.00663,
+      "test_mae": 0.73985,
+      "out_of_range_fraction": 0.00085,
+      "min_prediction": 0.4534,
+      "max_prediction": 5.2369
+    },
+    {
+      "variant": "logistic, clipped",
+      "test_rmse": 0.92862,
+      "test_rmse_ci95": 0.00844,
+      "test_mae": 0.74285,
+      "out_of_range_fraction": 0.0,
+      "min_prediction": 1.337,
+      "max_prediction": 4.7832
+    },
+    {
+      "variant": "logistic, unclipped",
+      "test_rmse": 0.92862,
+      "test_rmse_ci95": 0.00844,
+      "test_mae": 0.74285,
+      "out_of_range_fraction": 0.0,
+      "min_prediction": 1.337,
+      "max_prediction": 4.7832
+    }
+  ]
+}

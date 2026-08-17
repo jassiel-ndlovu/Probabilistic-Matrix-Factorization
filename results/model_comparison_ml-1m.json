@@ -1,0 +1,403 @@
+{
+  "experiment": "model_comparison_ml-1m",
+  "environment": {
+    "timestamp_utc": "2026-08-17T05:16:42+00:00",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.4.3",
+    "torch": "2.10.0+cpu"
+  },
+  "dataset": "ml-1m",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "roster": [
+    "Bias baseline",
+    "Item mean",
+    "PMF",
+    "PMF + biases",
+    "User mean"
+  ],
+  "reduced_roster": true,
+  "results": [
+    {
+      "label": "PMF + biases",
+      "dataset": "ml-1m",
+      "params": {
+        "n_factors": 20,
+        "lr": 0.001,
+        "reg": 0.1,
+        "reg_mode": "per_observation",
+        "momentum": 0.9,
+        "batch_size": 4096,
+        "link": "identity",
+        "use_bias": true
+      },
+      "test_rmse": {
+        "mean": 0.86442,
+        "std": 0.00168,
+        "ci95": 0.00417,
+        "values": [
+          0.86491,
+          0.8658,
+          0.86255
+        ]
+      },
+      "test_mae": {
+        "mean": 0.68308,
+        "std": 0.00129,
+        "ci95": 0.0032,
+        "values": [
+          0.68382,
+          0.68383,
+          0.6816
+        ]
+      },
+      "train_rmse": {
+        "mean": 0.80009,
+        "std": 0.00408,
+        "ci95": 0.01014,
+        "values": [
+          0.79967,
+          0.80437,
+          0.79624
+        ]
+      },
+      "fit_seconds": {
+        "mean": 87.5436,
+        "std": 6.52318,
+        "ci95": 16.20448,
+        "values": [
+          91.33539,
+          80.01134,
+          91.28408
+        ]
+      },
+      "epochs_run": {
+        "mean": 114.66667,
+        "std": 9.2376,
+        "ci95": 22.94748,
+        "values": [
+          120.0,
+          104.0,
+          120.0
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "label": "PMF",
+      "dataset": "ml-1m",
+      "params": {
+        "n_factors": 20,
+        "lr": 0.0005,
+        "reg": 0.1,
+        "reg_mode": "per_observation",
+        "momentum": 0.9,
+        "batch_size": 4096,
+        "link": "identity",
+        "use_bias": false
+      },
+      "test_rmse": {
+        "mean": 0.87222,
+        "std": 0.00182,
+        "ci95": 0.00452,
+        "values": [
+          0.87329,
+          0.87324,
+          0.87011
+        ]
+      },
+      "test_mae": {
+        "mean": 0.69264,
+        "std": 0.00168,
+        "ci95": 0.00418,
+        "values": [
+          0.69399,
+          0.69317,
+          0.69075
+        ]
+      },
+      "train_rmse": {
+        "mean": 0.8196,
+        "std": 6e-05,
+        "ci95": 0.00015,
+        "values": [
+          0.81966,
+          0.8196,
+          0.81954
+        ]
+      },
+      "fit_seconds": {
+        "mean": 89.47171,
+        "std": 4.91884,
+        "ci95": 12.21907,
+        "values": [
+          95.15144,
+          86.65436,
+          86.60933
+        ]
+      },
+      "epochs_run": {
+        "mean": 120.0,
+        "std": 0.0,
+        "ci95": 0.0,
+        "values": [
+          120.0,
+          120.0,
+          120.0
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "label": "Bias baseline",
+      "dataset": "ml-1m",
+      "params": {
+        "n_iter": 15,
+        "damping": 10.0
+      },
+      "test_rmse": {
+        "mean": 0.90842,
+        "std": 0.00215,
+        "ci95": 0.00534,
+        "values": [
+          0.90962,
+          0.9097,
+          0.90594
+        ]
+      },
+      "test_mae": {
+        "mean": 0.71894,
+        "std": 0.00196,
+        "ci95": 0.00487,
+        "values": [
+          0.7203,
+          0.71983,
+          0.71669
+        ]
+      },
+      "train_rmse": {
+        "mean": 0.89883,
+        "std": 0.00021,
+        "ci95": 0.00052,
+        "values": [
+          0.89883,
+          0.89862,
+          0.89903
+        ]
+      },
+      "fit_seconds": {
+        "mean": 0.30514,
+        "std": 0.00455,
+        "ci95": 0.01131,
+        "values": [
+          0.31021,
+          0.30382,
+          0.30139
+        ]
+      },
+      "epochs_run": {
+        "mean": 0.0,
+        "std": 0.0,
+        "ci95": 0.0,
+        "values": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "label": "Item mean",
+      "dataset": "ml-1m",
+      "params": {},
+      "test_rmse": {
+        "mean": 0.97896,
+        "std": 0.00257,
+        "ci95": 0.00639,
+        "values": [
+          0.98094,
+          0.97989,
+          0.97605
+        ]
+      },
+      "test_mae": {
+        "mean": 0.78221,
+        "std": 0.00206,
+        "ci95": 0.00512,
+        "values": [
+          0.78383,
+          0.78291,
+          0.77989
+        ]
+      },
+      "train_rmse": {
+        "mean": 0.97435,
+        "std": 0.00037,
+        "ci95": 0.00091,
+        "values": [
+          0.97406,
+          0.97425,
+          0.97476
+        ]
+      },
+      "fit_seconds": {
+        "mean": 0.01551,
+        "std": 0.00062,
+        "ci95": 0.00155,
+        "values": [
+          0.01603,
+          0.01482,
+          0.01569
+        ]
+      },
+      "epochs_run": {
+        "mean": 0.0,
+        "std": 0.0,
+        "ci95": 0.0,
+        "values": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "label": "User mean",
+      "dataset": "ml-1m",
+      "params": {},
+      "test_rmse": {
+        "mean": 1.03532,
+        "std": 0.00169,
+        "ci95": 0.0042,
+        "values": [
+          1.03695,
+          1.03543,
+          1.03357
+        ]
+      },
+      "test_mae": {
+        "mean": 0.82875,
+        "std": 0.00145,
+        "ci95": 0.0036,
+        "values": [
+          0.83019,
+          0.82875,
+          0.8273
+        ]
+      },
+      "train_rmse": {
+        "mean": 1.02752,
+        "std": 0.00038,
+        "ci95": 0.00095,
+        "values": [
+          1.02711,
+          1.02758,
+          1.02787
+        ]
+      },
+      "fit_seconds": {
+        "mean": 0.02085,
+        "std": 0.0025,
+        "ci95": 0.00622,
+        "values": [
+          0.02237,
+          0.02222,
+          0.01796
+        ]
+      },
+      "epochs_run": {
+        "mean": 0.0,
+        "std": 0.0,
+        "ci95": 0.0,
+        "values": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "table": [
+    {
+      "label": "PMF + biases",
+      "dataset": "ml-1m",
+      "test_rmse": 0.864420377024512,
+      "test_rmse_ci95": 0.0041660433803555105,
+      "test_rmse_std": 0.0016770581440189584,
+      "test_mae": 0.6830840728087838,
+      "train_rmse": 0.8000929567617517,
+      "fit_seconds": 87.54360309999902,
+      "epochs_run": 114.66666666666667,
+      "param_n_factors": 20,
+      "param_lr": 0.001,
+      "param_reg": 0.1,
+      "param_reg_mode": "per_observation",
+      "param_momentum": 0.9,
+      "param_batch_size": 4096,
+      "param_link": "identity",
+      "param_use_bias": true
+    },
+    {
+      "label": "PMF",
+      "dataset": "ml-1m",
+      "test_rmse": 0.8722166495421595,
+      "test_rmse_ci95": 0.004524504060092614,
+      "test_rmse_std": 0.0018213579861901604,
+      "test_mae": 0.6926367916883351,
+      "train_rmse": 0.8196012823438732,
+      "fit_seconds": 89.47170960000949,
+      "epochs_run": 120.0,
+      "param_n_factors": 20,
+      "param_lr": 0.0005,
+      "param_reg": 0.1,
+      "param_reg_mode": "per_observation",
+      "param_momentum": 0.9,
+      "param_batch_size": 4096,
+      "param_link": "identity",
+      "param_use_bias": false
+    },
+    {
+      "label": "Bias baseline",
+      "dataset": "ml-1m",
+      "test_rmse": 0.9084218407157206,
+      "test_rmse_ci95": 0.005335283152116632,
+      "test_rmse_std": 0.0021477404923567534,
+      "test_mae": 0.7189416639586828,
+      "train_rmse": 0.8988289694443155,
+      "fit_seconds": 0.3051397333426091,
+      "epochs_run": 0.0,
+      "param_n_iter": 15,
+      "param_damping": 10.0
+    },
+    {
+      "label": "Item mean",
+      "dataset": "ml-1m",
+      "test_rmse": 0.9789606169767616,
+      "test_rmse_ci95": 0.006392116897101725,
+      "test_rmse_std": 0.0025731733256437795,
+      "test_mae": 0.7822087772700379,
+      "train_rmse": 0.9743543141517153,
+      "fit_seconds": 0.015513666692034652,
+      "epochs_run": 0.0
+    },
+    {
+      "label": "User mean",
+      "dataset": "ml-1m",
+      "test_rmse": 1.0353190174605846,
+      "test_rmse_ci95": 0.004201137715452323,
+      "test_rmse_std": 0.0016911855150301591,
+      "test_mae": 0.8287466294181876,
+      "train_rmse": 1.0275180925452876,
+      "fit_seconds": 0.020850666682235897,
+      "epochs_run": 0.0
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "experiment": "optimiser_ml-100k",
+  "environment": {
+    "timestamp_utc": "2026-08-17T08:10:02+00:00",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.4.3",
+    "torch": "2.10.0+cpu"
+  },
+  "dataset": "ml-100k",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "table": [
+    {
+      "optimiser": "SGD + momentum",
+      "test_rmse": 0.93106,
+      "test_rmse_ci95": 0.00461,
+      "train_rmse": 0.77352,
+      "epochs_to_best": 110.8,
+      "fit_seconds": 22.76,
+      "params": {
+        "n_factors": 20,
+        "lr": 0.0005,
+        "reg": 0.1,
+        "momentum": 0.9,
+        "batch_size": 256,
+        "n_epochs": 600,
+        "patience": 25
+      }
+    },
+    {
+      "optimiser": "Adam",
+      "test_rmse": 0.93584,
+      "test_rmse_ci95": 0.00511,
+      "train_rmse": 0.78732,
+      "epochs_to_best": 30.4,
+      "fit_seconds": 7.16,
+      "params": {
+        "n_factors": 20,
+        "lr": 0.01,
+        "reg": 0.1,
+        "batch_size": 1024,
+        "n_epochs": 600,
+        "patience": 25
+      }
+    }
+  ]
+}

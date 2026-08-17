@@ -1,0 +1,94 @@
+{
+  "experiment": "ranking_comparison_ml-100k",
+  "environment": {
+    "timestamp_utc": "2026-08-17T08:29:37+00:00",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel",
+    "numpy": "2.4.3",
+    "torch": "2.10.0+cpu"
+  },
+  "dataset": "ml-100k",
+  "k": 10,
+  "relevance_threshold": 4.0,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "max_users_per_seed": 1500,
+  "table": [
+    {
+      "label": "BPMF",
+      "precision@10": 0.08267,
+      "precision@10_ci95": 0.0138,
+      "recall@10": 0.06612,
+      "recall@10_ci95": 0.01041,
+      "ndcg@10": 0.09935,
+      "ndcg@10_ci95": 0.01236
+    },
+    {
+      "label": "PMF + logistic link",
+      "precision@10": 0.07866,
+      "precision@10_ci95": 0.00571,
+      "recall@10": 0.06412,
+      "recall@10_ci95": 0.00943,
+      "ndcg@10": 0.09286,
+      "ndcg@10_ci95": 0.01165
+    },
+    {
+      "label": "PMF",
+      "precision@10": 0.06952,
+      "precision@10_ci95": 0.01354,
+      "recall@10": 0.05497,
+      "recall@10_ci95": 0.01095,
+      "ndcg@10": 0.08087,
+      "ndcg@10_ci95": 0.01748
+    },
+    {
+      "label": "Bias baseline",
+      "precision@10": 0.07405,
+      "precision@10_ci95": 0.01825,
+      "recall@10": 0.05566,
+      "recall@10_ci95": 0.01263,
+      "ndcg@10": 0.07976,
+      "ndcg@10_ci95": 0.01801
+    },
+    {
+      "label": "PMF + biases",
+      "precision@10": 0.04953,
+      "precision@10_ci95": 0.0078,
+      "recall@10": 0.03761,
+      "recall@10_ci95": 0.00783,
+      "ndcg@10": 0.0529,
+      "ndcg@10_ci95": 0.01495
+    },
+    {
+      "label": "Global mean",
+      "precision@10": 0.01707,
+      "precision@10_ci95": 0.00422,
+      "recall@10": 0.01392,
+      "recall@10_ci95": 0.00474,
+      "ndcg@10": 0.01561,
+      "ndcg@10_ci95": 0.00417
+    },
+    {
+      "label": "User mean",
+      "precision@10": 0.01707,
+      "precision@10_ci95": 0.00422,
+      "recall@10": 0.01392,
+      "recall@10_ci95": 0.00474,
+      "ndcg@10": 0.01561,
+      "ndcg@10_ci95": 0.00417
+    },
+    {
+      "label": "Item mean",
+      "precision@10": 0.00014,
+      "precision@10_ci95": 0.00031,
+      "recall@10": 8e-05,
+      "recall@10_ci95": 0.00022,
+      "ndcg@10": 0.00011,
+      "ndcg@10_ci95": 0.00023
+    }
+  ]
+}
